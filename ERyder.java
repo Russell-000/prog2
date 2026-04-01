@@ -12,8 +12,6 @@ public class ERyder {
         this.kmDriven = 0.0; 
     }
         
-
-
     public ERyder(int bikeID, int batteryLevel, boolean isAvailable, double kmDriven) 
     {
         this.bikeID = bikeID;
@@ -21,8 +19,7 @@ public class ERyder {
         this.isAvailable = isAvailable;
         this.kmDriven = kmDriven;
     }
-
-
+    
     public void ride() 
     {
         if (isAvailable && batteryLevel > 0) 
@@ -34,8 +31,7 @@ public class ERyder {
             System.out.println("Bike is not available.");
         }
     }
-
-
+    
     public void printBikeDetails() 
     {
         System.out.println("Bike ID: " + bikeID);
@@ -58,7 +54,6 @@ public class ERyder {
     {
         return batteryLevel;
     }
-
     
     public void setBatteryLevel(int batteryLevel) {
         if (batteryLevel >= 0 && batteryLevel <= 100) 

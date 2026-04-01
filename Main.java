@@ -5,7 +5,7 @@ public class Main {
         System.out.println("Details of bike created with default constructor:");
         bike1.printBikeDetails();
         System.out.println();
-
+        
         // Create object using parameterized constructor, call ride(), then print details
         ERyder bike2 = new ERyder(101, 75, true, 120.5);
         System.out.println("Calling ride() for bike2:");
