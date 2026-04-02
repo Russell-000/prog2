@@ -12,6 +12,7 @@ public class AdminPanel {
         this.userService = new UserService();
         this.bikeService = new BikeService();
         this.rentalService = new RentalService(bikeService);
+        this.bikeService.setRentalService(this.rentalService);
     }
 
     public void displayMenu() {
@@ -25,7 +26,9 @@ public class AdminPanel {
             System.out.println("3. Update user");
             System.out.println("4. View all users");
             System.out.println("5. Demo bike rental flow");
-            System.out.println("6. Exit");
+            System.out.println("6. View System Logs");
+            System.out.println("7. Manage Pending Bike Requests");
+            System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine();
@@ -47,12 +50,18 @@ public class AdminPanel {
                     demoBikeRentalFlow(scanner);
                     break;
                 case 6:
+                    bikeService.viewSystemLogs();
+                    break;
+                case 7:
+                    managePendingBikeRequests(scanner);
+                    break;
+                case 8:
                     System.out.println("Exiting Admin Panel.");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        } while (choice != 6);
+        } while (choice != 8);
     }
 
     private void addUser(Scanner scanner) {
@@ -103,6 +112,32 @@ public class AdminPanel {
         }
     }
 
+    private void managePendingBikeRequests(Scanner scanner) {
+        int sub;
+        do {
+            System.out.println("\n--- Manage Pending Bike Requests ---");
+            System.out.println("1. View Queue");
+            System.out.println("2. Update Queue");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            sub = scanner.nextInt();
+            scanner.nextLine();
+            switch (sub) {
+                case 1:
+                    bikeService.viewBikeRequestQueue();
+                    break;
+                case 2:
+                    bikeService.updateQueueRemoveFirst();
+                    break;
+                case 3:
+                    System.out.println("Returning to Admin Panel.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (sub != 3);
+    }
+
     private void demoBikeRentalFlow(Scanner scanner) {
         System.out.print("Is the user registered? (true/false): ");
         boolean isRegisteredUser = scanner.nextBoolean();
@@ -119,7 +154,7 @@ public class AdminPanel {
             System.out.println("Welcome back, " + emailAddress + "!");
         }
 
-        String bikeID = bikeService.findAvailableBikeAtLocation(location);
+        String bikeID = bikeService.findAvailableBikeAtLocation(location, emailAddress);
         if (bikeID == null) {
             return;
         }

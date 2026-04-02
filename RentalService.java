@@ -12,19 +12,32 @@ public class RentalService {
     }
 
     public boolean startRental(String bikeID, String emailAddress) {
-        if (!bikeService.reserveBike(bikeID)) {
+        String location = bikeService.getBikeLocation(bikeID);
+        if (!bikeService.reserveBike(bikeID, emailAddress, location)) {
             return false;
         }
-        ActiveRental activeRental = new ActiveRental(bikeID, emailAddress, LocalDateTime.now());
+        bikeService.logTripStarted(bikeID, emailAddress, location);
+        ActiveRental activeRental = new ActiveRental(bikeID, emailAddress, LocalDateTime.now(), location);
         activeRentals.add(activeRental);
         return true;
     }
 
     public boolean endRental(String bikeID) {
+        ActiveRental ended = null;
+        for (ActiveRental rental : activeRentals) {
+            if (rental.getBikeID().equals(bikeID)) {
+                ended = rental;
+                break;
+            }
+        }
         boolean removed = removeActiveRental(bikeID);
         boolean released = bikeService.releaseBike(bikeID);
+        if (ended != null) {
+            bikeService.logTripEnded(bikeID, ended.getUserEmail(), ended.getLocation());
+        }
         if (removed && released) {
             System.out.println("Your trip has ended. Thank you for using our service. We hope to see you again soon!");
+            bikeService.removeTrip(bikeID);
             return true;
         }
         return false;
