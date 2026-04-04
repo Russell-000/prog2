@@ -2,13 +2,50 @@ import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 public class RentalService {
+    public static final double BASE_FARE = 3.0;
+
     private final List<ActiveRental> activeRentals = new LinkedList<>();
     private final BikeService bikeService;
+    private RegisteredUsers userForFareCalculation;
 
     public RentalService(BikeService bikeService) {
         this.bikeService = bikeService;
+    }
+
+    public void simulateApplicationInput(RegisteredUsers user, Scanner scanner) {
+        userForFareCalculation = user;
+        try {
+            String emailAddress = user.getEmailAddress();
+            System.out.println("Simulating rental for " + user.getFullName() + " (" + emailAddress + ")");
+            System.out.print("Enter location: ");
+            String location = scanner.nextLine();
+            String bikeID = bikeService.findAvailableBikeAtLocation(location, emailAddress);
+            if (bikeID == null) {
+                return;
+            }
+            if (startRental(bikeID, emailAddress)) {
+                System.out.println("Displaying active rentals...");
+                trackActiveRentals();
+                System.out.println("Simulating the end of the trip...");
+                endRental(bikeID);
+                System.out.println("Displaying the active rentals after trip end...");
+                trackActiveRentals();
+            }
+        } finally {
+            userForFareCalculation = null;
+        }
+    }
+
+    public void removeTrip(String bikeID) {
+        if (userForFareCalculation != null) {
+            double fare = userForFareCalculation.calculateFare(BASE_FARE);
+            System.out.println("Trip fare (polymorphic calculateFare): " + fare);
+            userForFareCalculation.displayUserType();
+        }
+        bikeService.removeTrip(bikeID);
     }
 
     public boolean startRental(String bikeID, String emailAddress) {
@@ -37,7 +74,7 @@ public class RentalService {
         }
         if (removed && released) {
             System.out.println("Your trip has ended. Thank you for using our service. We hope to see you again soon!");
-            bikeService.removeTrip(bikeID);
+            removeTrip(bikeID);
             return true;
         }
         return false;

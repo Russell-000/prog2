@@ -71,10 +71,10 @@ public class AdminPanel {
         String email = scanner.nextLine();
         System.out.print("User type: ");
         String userType = scanner.nextLine();
-        RegisteredUsers user = new RegisteredUsers(fullName, email, null,
+        RegisteredUsers newUser = userService.addNewUsers(fullName, email, null,
                 null, null, null, null, userType, new String[0]);
-        userService.addUser(user);
         System.out.println("User added.");
+        rentalService.simulateApplicationInput(newUser, scanner);
     }
 
     private void removeUser(Scanner scanner) {
